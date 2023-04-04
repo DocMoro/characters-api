@@ -1,16 +1,16 @@
 const router = require('express').Router();
 
-const { validatorUpdateCharacter, validatorDeleteCharacter, validatorCreateCharacter } = require('../utils/validator');
+const { validatorUpdateCharacter, validatorDeleteCharacter } = require('../utils/validator');
 
 const {
-  getCharacter,
+  getUserCharacters,
   createCharacter,
   deleteCharacter,
   updateCharacter,
 } = require('../controllers/characters');
 
-router.get('/', getCharacter);
-router.post('/', validatorCreateCharacter, createCharacter);
+router.get('/', getUserCharacters);
+router.post('/', createCharacter);
 router.delete('/:charId', validatorDeleteCharacter, deleteCharacter);
 router.patch('/:charId', validatorUpdateCharacter, updateCharacter);
 
