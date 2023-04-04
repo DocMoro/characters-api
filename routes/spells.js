@@ -10,7 +10,7 @@ const {
 
 router.get('/', getSpells);
 router.post('/', validatorCreateSpell, createSpell);
-router.delete('/:movieId', validatorDeleteSpell, deleteSpell);
-router.patch('/:movieId', validatorUpdateSpell, updateSpell);
+router.delete('/:spellId', validatorDeleteSpell, deleteSpell);
+router.patch('/:spellId', validatorUpdateSpell, updateSpell);
 
 module.exports = router;

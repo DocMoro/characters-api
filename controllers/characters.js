@@ -1,6 +1,6 @@
 const Character = require('../models/character');
 
-const { ERR_404, ERR_404 } = require('../utils/constants');
+const { ERR_403, ERR_404, ERR_400 } = require('../utils/constants');
 
 module.exports.getUserCharacters = (req, res, next) => {
   const { _id } = req.user;
@@ -27,7 +27,7 @@ module.exports.deleteCharacter = (req, res, next) => {
         throw new Error404(ERR_404);
       }
 
-      if (`${char.owner}` !== req.user._id) {
+      if (char.owner.toString() !== req.user._id) {
         throw new Error403(ERR_403);
       }
 
