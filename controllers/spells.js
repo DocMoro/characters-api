@@ -9,51 +9,65 @@ module.exports.getSpells = (req, res, next) => {
 };
 
 module.exports.createSpell = (req, res, next) => {
-  Spell.create(req.body)
-    .then((spell) => res.send(spell))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new Error400(ERR_400));
-      }
+  const { role } = req.user;
 
-      return next(err);
-    });
+  if(role === 'Admin') {
+    Spell.create(req.body)
+      .then((spell) => res.send(spell))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          return next(new Error400(ERR_400));
+        }
+
+        return next(err);
+      });
+  } else {
+    return next(new Error403(ERR_403));
+  }
 };
 
 module.exports.deleteSpell = (req, res, next) => {
-  Spell.findById(req.params.spellId)
-    .then((spell) => {
-      if (!spell) {
-        throw new Error404(ERR_404);
-      }
+  const { role } = req.user;
 
-      if (spell.owner.toString() !== req.user._id) {
-        throw new Error403(ERR_403);
-      }
+  if(role === 'Admin') {
+    Spell.findById(req.params.spellId)
+      .then((spell) => {
+        if (!spell) {
+          throw new Error404(ERR_404);
+        }
 
-      return Spell.findByIdAndRemove(req.params.spellId).select(['-createdAt']);
-    })
-    .then((spell) => res.send(spell))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new Error400(ERR_400));
-      }
+        return Spell.findByIdAndRemove(req.params.spellId).select(['-createdAt']);
+      })
+      .then((spell) => res.send(spell))
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          return next(new Error400(ERR_400));
+        }
 
-      return next(err);
-    });
+        return next(err);
+      });
+  } else {
+    return next(new Error403(ERR_403));
+  }
 };
 
 module.exports.updateSpell = (req, res, next) => {
-  Spell.findByIdAndUpdate(req.params.spellId, req.body, {
-    new: true,
-    runValidators: true,
-  })
-    .then((spell) => res.send(spell))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new Error400(ERR_400));
-      }
+  const { role } = req.user;
 
-      return next(err);
-    });
+  if(role === 'Admin') {
+    Spell.findByIdAndUpdate(req.params.spellId, req.body, {
+      new: true,
+      runValidators: true,
+    })
+      .then((spell) => res.send(spell))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          return next(new Error400(ERR_400));
+        }
+
+        return next(err);
+      });
+  } else {
+    return next(new Error403(ERR_403));
+  }
 };
