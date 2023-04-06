@@ -1,5 +1,9 @@
 const Character = require('../models/character');
 
+const Error404 = require('../errors/error-404');
+const Error400 = require('../errors/error-400');
+const Error403 = require('../errors/error-403');
+
 const { ERR_403, ERR_404, ERR_400 } = require('../utils/constants');
 
 module.exports.getUserCharacters = (req, res, next) => {

@@ -1,5 +1,9 @@
 const Spell = require('../models/spell');
 
+const Error404 = require('../errors/error-404');
+const Error400 = require('../errors/error-400');
+const Error403 = require('../errors/error-403');
+
 const { ERR_400, ERR_403, ERR_404 } = require('../utils/constants');
 
 module.exports.getSpells = (req, res, next) => {

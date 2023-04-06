@@ -3,6 +3,10 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const Error404 = require('../errors/error-404');
+const Error400 = require('../errors/error-400');
+const Error409 = require('../errors/error-409');
+
 const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;

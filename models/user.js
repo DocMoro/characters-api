@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const { ERR_400 } = require('../utils/constants');
+const Error401 = require('../errors/error-401');
+
+const { ERR_400, ERR_401 } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   email: {
