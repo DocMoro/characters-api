@@ -18,7 +18,7 @@ const { ERR_404 } = require('./utils/constants');
 const app = express();
 app.use(express.json());
 
-mongoose.connect(`mongodb://${MONGO_IP}:${MONGO_PORT}/bitfilmsdb`, {
+mongoose.connect(`mongodb://${MONGO_IP}:${MONGO_PORT}/bitchardb`, {
   useNewUrlParser: true,
 });
 
