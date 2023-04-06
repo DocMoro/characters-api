@@ -1,14 +1,14 @@
 const { celebrate, Joi } = require('celebrate');
 
 const validatorSignin = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 });
 
 const validatorSignup = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
     role: Joi.string().valid('Admin', 'User'),
@@ -16,7 +16,7 @@ const validatorSignup = celebrate({
 });
 
 const validatorCreateSpell = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     name: Joi.string().required(),
     desc: Joi.string().required(),
     higher_level: Joi.string(),
@@ -36,7 +36,7 @@ const validatorCreateSpell = celebrate({
       'Ограждение',
       'Очарование',
       'Преобразование',
-      'Прорицание'
+      'Прорицание',
     ).required(),
     classes: Joi.array().unique().items(Joi.string().valid(
       'Бард',
@@ -47,19 +47,19 @@ const validatorCreateSpell = celebrate({
       'Колдун',
       'Волшебник',
       'Друид',
-      'Изобретатель'
+      'Изобретатель',
     )).required(),
   }),
 });
 
 const validatorDeleteSpell = celebrate({
-  params: Joi.object().keys({
-    spellId: Joi.string().alphanum().length(24).hex().required(),
+  params: Joi.object({
+    spellId: Joi.string().alphanum().length(24).hex(),
   }),
 });
 
 const validatorUpdateSpell = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     name: Joi.string(),
     desc: Joi.string(),
     higher_level: Joi.string(),
@@ -79,7 +79,7 @@ const validatorUpdateSpell = celebrate({
       'Ограждение',
       'Очарование',
       'Преобразование',
-      'Прорицание'
+      'Прорицание',
     ),
     classes: Joi.array().unique().items(Joi.string().valid(
       'Бард',
@@ -90,19 +90,19 @@ const validatorUpdateSpell = celebrate({
       'Колдун',
       'Волшебник',
       'Друид',
-      'Изобретатель'
+      'Изобретатель',
     )),
   }),
 });
 
 const validatorDeleteCharacter = celebrate({
-  params: Joi.object().keys({
-    charId: Joi.string().alphanum().length(24).hex().required(),
+  params: Joi.object({
+    charId: Joi.string().alphanum().length(24).hex(),
   }),
 });
 
 const validatorUpdateCharacter = celebrate({
-  body: Joi.object.keys({
+  body: Joi.object({
     spells: Joi.array().unique().items(Joi.string().alphanum().length(24).hex()).required(),
   }),
 });

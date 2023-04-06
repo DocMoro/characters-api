@@ -48,7 +48,7 @@ module.exports.deleteCharacter = (req, res, next) => {
 };
 
 module.exports.updateCharacter = (req, res, next) => {
-  User.findByIdAndUpdate(req.params.charId, {
+  Character.findByIdAndUpdate(req.params.charId, {
     spells: req.body.spells,
   }, {
     new: true,

@@ -62,7 +62,7 @@ const spellSchema = new mongoose.Schema({
       'Ограждение',
       'Очарование',
       'Преобразование',
-      'Прорицание'
+      'Прорицание',
     ],
   },
   classes: [{
@@ -76,9 +76,9 @@ const spellSchema = new mongoose.Schema({
       'Колдун',
       'Волшебник',
       'Друид',
-      'Изобретатель'
+      'Изобретатель',
     ],
-  }]
+  }],
 }, {
   versionKey: false,
 });

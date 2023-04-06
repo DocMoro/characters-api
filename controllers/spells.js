@@ -15,7 +15,7 @@ module.exports.getSpells = (req, res, next) => {
 module.exports.createSpell = (req, res, next) => {
   const { role } = req.user;
 
-  if(role === 'Admin') {
+  if (role === 'Admin') {
     Spell.create(req.body)
       .then((spell) => res.send(spell))
       .catch((err) => {
@@ -25,15 +25,14 @@ module.exports.createSpell = (req, res, next) => {
 
         return next(err);
       });
-  } else {
-    return next(new Error403(ERR_403));
   }
+  return next(new Error403(ERR_403));
 };
 
 module.exports.deleteSpell = (req, res, next) => {
   const { role } = req.user;
 
-  if(role === 'Admin') {
+  if (role === 'Admin') {
     Spell.findById(req.params.spellId)
       .then((spell) => {
         if (!spell) {
@@ -50,15 +49,14 @@ module.exports.deleteSpell = (req, res, next) => {
 
         return next(err);
       });
-  } else {
-    return next(new Error403(ERR_403));
   }
+  return next(new Error403(ERR_403));
 };
 
 module.exports.updateSpell = (req, res, next) => {
   const { role } = req.user;
 
-  if(role === 'Admin') {
+  if (role === 'Admin') {
     Spell.findByIdAndUpdate(req.params.spellId, req.body, {
       new: true,
       runValidators: true,
@@ -71,7 +69,6 @@ module.exports.updateSpell = (req, res, next) => {
 
         return next(err);
       });
-  } else {
-    return next(new Error403(ERR_403));
   }
+  return next(new Error403(ERR_403));
 };

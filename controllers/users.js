@@ -59,7 +59,8 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({
+      const token = jwt.sign(
+        {
           _id: user._id,
           role: user.role,
         },
