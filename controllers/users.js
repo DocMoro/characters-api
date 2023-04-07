@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
 
 const User = require('../models/user');
 
@@ -7,9 +7,9 @@ const Error404 = require('../errors/error-404');
 const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
-const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
+const { generateTokens, saveToken } = require('../service/token');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
 
 module.exports.getUserProfile = (req, res, next) => {
   User.findById(req.user._id)
@@ -36,6 +36,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       ...req.body,
       password: hash,
+      activationLink: uuid.v4(),
     }))
     .then((user) => res.send({
       email: user.email,
@@ -59,15 +60,12 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        {
-          _id: user._id,
-          role: user.role,
-        },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-      );
+      const payload = {
+        _id: user._id,
+        role: user.role,
+      };
 
-      res.send({ token });
+      res.send(generateTokens(payload));
     })
     .catch(next);
 };
