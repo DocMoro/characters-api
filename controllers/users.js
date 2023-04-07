@@ -55,17 +55,18 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUserByCredentials(email, password);
+    const tokens = generateTokens({
+      _id: user._id,
+      role: user.role,
+    });
 
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const payload = {
-        _id: user._id,
-        role: user.role,
-      };
-
-      res.send(generateTokens(payload));
-    })
-    .catch(next);
+    await saveToken(user._id, tokens.refreshToken);
+    res.send(tokens);
+  } catch (err) {
+    return next(err);
+  }
 };
