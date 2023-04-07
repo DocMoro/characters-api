@@ -27,6 +27,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'User',
   },
+  isActivated: {
+    type: Boolean,
+    default: false,
+    select: false,
+  },
+  activationLink: {
+    type: String,
+    select: false,
+  }
 }, {
   versionKey: false,
 });
