@@ -20,9 +20,6 @@
   },
   "homepage": "https://github.com/DocMoro/characters-api#readme",
   "devDependencies": {
-    "eslint": "^8.37.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.22"
   },
   "dependencies": {
@@ -36,6 +33,7 @@
     "helmet": "^6.0.1",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
+    "nodemailer": "^6.9.1",
     "uuid": "^9.0.0",
     "validator": "^13.9.0",
     "winston": "^3.8.2"

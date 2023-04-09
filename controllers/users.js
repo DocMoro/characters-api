@@ -8,8 +8,10 @@ const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
 const { generateTokens, saveToken } = require('../service/token');
+const mailService = require('../service/mail');
 
 const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
+const { NODE_ENV, API_URL } = process.env;
 
 module.exports.getUserProfile = (req, res, next) => {
   User.findById(req.user._id)
@@ -29,30 +31,42 @@ module.exports.getUserProfile = (req, res, next) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
-  const { password } = req.body;
+module.exports.createUser = async (req, res, next) => {
+  try {
+    const { password, email } = req.body;
+    const candidate = await User.findOne({ email });
 
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
+    if (candidate) {
+      throw new Error409(ERR_409);
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    const activationLink = uuid.v4();
+
+    const user = await User.create({
       ...req.body,
       password: hash,
-      activationLink: uuid.v4(),
-    }))
-    .then((user) => res.send({
+      activationLink
+    });
+
+    await mailService.sendActivationMail(
+      email,
+      `${NODE_ENV === 'production' ? API_URL : 'http://localhost:3000'}/activate/${activationLink}`,
+    );
+
+    res.send({
       email: user.email,
       role: user.role,
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new Error400(ERR_400));
-      }
-
-      if (err.code === 11000) {
-        return next(new Error409(ERR_409));
-      }
-
-      return next(err);
     });
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      return next(new Error400(ERR_400));
+    }
+
+    console.log(err);
+
+    return next(err);
+  }
 };
 
 module.exports.login = async (req, res, next) => {
@@ -65,8 +79,20 @@ module.exports.login = async (req, res, next) => {
     });
 
     await saveToken(user._id, tokens.refreshToken);
+    res.cookie('refresh', tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    })
     res.send(tokens);
   } catch (err) {
     return next(err);
+  }
+};
+
+module.exports.activate = async (req, res, next) => {
+  try {
+
+  } catch (err) {
+
   }
 };

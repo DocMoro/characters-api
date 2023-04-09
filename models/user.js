@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
   activationLink: {
     type: String,
     select: false,
-  }
+  },
 }, {
   versionKey: false,
 });
