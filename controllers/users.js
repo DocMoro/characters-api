@@ -56,7 +56,7 @@ module.exports.registration = async (req, res, next) => {
 
     await mailService.sendActivationMail(email, activationLink);
 
-    res.cookie('refresh', tokens.refreshToken, {
+    res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -84,7 +84,7 @@ module.exports.login = async (req, res, next) => {
     });
     await saveToken(user._id, tokens.refreshToken);
 
-    res.cookie('refresh', tokens.refreshToken, {
+    res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -117,9 +117,9 @@ module.exports.activate = async (req, res, next) => {
 module.exports.logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
-    await removeToken(refreshToken);
+    const tokenData = await removeToken(refreshToken);
     res.clearCookie('refreshToken');
-    res.status(200);
+    res.send(tokenData);
   } catch (err) {
     return next(err);
   }
@@ -149,7 +149,7 @@ module.exports.refresh = async (req, res, next) => {
     });
     await saveToken(user._id, tokens.refreshToken);
 
-    res.cookie('refresh', tokens.refreshToken, {
+    res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });

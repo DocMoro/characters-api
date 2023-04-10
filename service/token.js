@@ -35,7 +35,8 @@ module.exports.saveToken = async (userId, refreshToken) => {
 };
 
 module.exports.removeToken = async (refreshToken) => {
-  await Token.deleteOne({ refreshToken });
+  const tokenData = await Token.deleteOne({ refreshToken });
+  return tokenData;
 };
 
 module.exports.findToken = async (refreshToken) => {
