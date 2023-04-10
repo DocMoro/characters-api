@@ -140,7 +140,7 @@ module.exports.refresh = async (req, res, next) => {
       throw new Error401(ERR_401);
     }
 
-    const user = await User.findBuId(userData._id);
+    const user = await User.findById(userData._id);
     const { _id, role, email, isActivated } = user;
 
     const tokens = generateTokens({
