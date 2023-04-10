@@ -10,7 +10,7 @@ const Error409 = require('../errors/error-409');
 const { generateTokens, saveToken } = require('../service/token');
 const mailService = require('../service/mail');
 
-const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
+const { ERR_404, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
 const { NODE_ENV, API_URL } = process.env;
 
 module.exports.getUserProfile = (req, res, next) => {
@@ -49,10 +49,7 @@ module.exports.createUser = async (req, res, next) => {
       activationLink
     });
 
-    await mailService.sendActivationMail(
-      email,
-      `${NODE_ENV === 'production' ? API_URL : 'http://localhost:3000'}/activate/${activationLink}`,
-    );
+    await mailService.sendActivationMail(email, activationLink);
 
     res.send({
       email: user.email,
@@ -62,9 +59,6 @@ module.exports.createUser = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       return next(new Error400(ERR_400));
     }
-
-    console.log(err);
-
     return next(err);
   }
 };
@@ -91,8 +85,15 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.activate = async (req, res, next) => {
   try {
+    const user = await User.findOne({ activationLink: req.params.link });
 
+    if (!user) {
+      throw new Error400(ERR_400);
+    }
+    user.isActivated = true;
+    await user.save();
+    res.redirect(NODE_ENV === 'production' ? API_URL : DEV_URL);
   } catch (err) {
-
+    return next(err);
   }
 };
