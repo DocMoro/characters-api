@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
   isActivated: {
     type: Boolean,
     default: false,
-    select: false,
   },
   activationLink: {
     type: String,

@@ -35,25 +35,33 @@ module.exports.createUser = async (req, res, next) => {
   try {
     const { password, email } = req.body;
     const candidate = await User.findOne({ email });
-
     if (candidate) {
       throw new Error409(ERR_409);
     }
-
     const hash = await bcrypt.hash(password, 10);
     const activationLink = uuid.v4();
-
     const user = await User.create({
       ...req.body,
       password: hash,
       activationLink
     });
 
+    const { _id, role, isActivated } = user;
+
+    const tokens = generateTokens({
+      _id,
+      role,
+    });
+    await saveToken(user._id, tokens.refreshToken);
+
     await mailService.sendActivationMail(email, activationLink);
 
+    res.cookie('refresh', tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
     res.send({
-      email: user.email,
-      role: user.role,
+      accessToken: tokens.accessToken
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -67,17 +75,23 @@ module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
+
     const tokens = generateTokens({
       _id: user._id,
       role: user.role,
     });
-
     await saveToken(user._id, tokens.refreshToken);
+
     res.cookie('refresh', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-    })
-    res.send(tokens);
+    });
+    res.send({
+      email,
+      role,
+      isActivated,
+      accessToken: tokens.accessToken
+    });
   } catch (err) {
     return next(err);
   }
