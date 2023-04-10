@@ -46,11 +46,9 @@ module.exports.createUser = async (req, res, next) => {
       activationLink
     });
 
-    const { _id, role, isActivated } = user;
-
     const tokens = generateTokens({
-      _id,
-      role,
+      _id: user._id,
+      role: user.role,
     });
     await saveToken(user._id, tokens.refreshToken);
 
@@ -76,9 +74,11 @@ module.exports.login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
 
+    const { _id, role, isActivated } = user;
+
     const tokens = generateTokens({
-      _id: user._id,
-      role: user.role,
+      _id,
+      role,
     });
     await saveToken(user._id, tokens.refreshToken);
 
