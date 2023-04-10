@@ -3,19 +3,19 @@ const nodemailer = require('nodemailer');
 class mailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
+      host: 'smtp.mail.ru',
+      port: 465,
       secure: true,
       auth: {
-        user: 'prcharmail@gmail.com',
-        pass: 'rootroot'
+        user: 'prcharapi@mail.ru',
+        pass: 'ddac62tCxT3uxvq4CR9d'
       }
     })
   }
 
   async sendActivationMail(to, link) {
     await this.transporter.sendMail({
-      from: 'prcharmail@gmail.com',
+      from: 'prcharapi@mail.ru',
       to,
       subject: 'Активация аккаунта',
       text: '',
