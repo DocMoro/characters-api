@@ -7,7 +7,7 @@ const Error404 = require('../errors/error-404');
 const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
-const { generateTokens, saveToken } = require('../service/token');
+const { generateTokens, saveToken, removeToken } = require('../service/token');
 const mailService = require('../service/mail');
 
 const { ERR_404, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
@@ -31,7 +31,7 @@ module.exports.getUserProfile = (req, res, next) => {
     });
 };
 
-module.exports.createUser = async (req, res, next) => {
+module.exports.registration = async (req, res, next) => {
   try {
     const { password, email } = req.body;
     const candidate = await User.findOne({ email });
@@ -107,6 +107,17 @@ module.exports.activate = async (req, res, next) => {
     user.isActivated = true;
     await user.save();
     res.redirect(NODE_ENV === 'production' ? API_URL : DEV_URL);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+    await removeToken(refreshToken);
+    res.clearCookie('refreshToken');
+    res.status(200);
   } catch (err) {
     return next(err);
   }
