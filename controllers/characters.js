@@ -14,6 +14,21 @@ module.exports.getUserCharacters = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getCharacter = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const char = await Character.findById(id);
+
+    if (!char) {
+      throw new Error404(ERR_404);
+    }
+
+    res.send(char);
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports.createCharacter = (req, res, next) => {
   const { _id } = req.user;
 
