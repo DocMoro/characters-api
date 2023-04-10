@@ -9,7 +9,7 @@ const { ERR_403, ERR_404, ERR_400 } = require('../utils/constants');
 module.exports.getUserCharacters = (req, res, next) => {
   const { _id } = req.user;
 
-  Character.find({ owner: _id }).select(['-createdAt'])
+  Character.find({ owner: _id }).select(['_id name'])
     .then((char) => res.send(char))
     .catch(next);
 };
