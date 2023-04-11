@@ -15,22 +15,20 @@ const mailService = require('../service/mail');
 const { ERR_401, ERR_404, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
 const { NODE_ENV, API_URL } = process.env;
 
-module.exports.getUserProfile = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new Error404(ERR_404);
-      }
+module.exports.getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
 
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new Error400(ERR_400));
-      }
-
-      return next(err);
-    });
+    if (!user) {
+      throw new Error404(ERR_404);
+    }
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new Error400(ERR_400));
+    }
+    return next(err);
+  }
 };
 
 module.exports.registration = async (req, res, next) => {
