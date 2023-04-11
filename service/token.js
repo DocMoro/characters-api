@@ -8,7 +8,7 @@ module.exports.generateTokens = (payload) => {
   const accessToken = jwt.sign(
     payload,
     NODE_ENV === 'production' ? JWT_ACCESS_SECRET : 'dev-secret',
-    { expiresIn: '30m' },
+    { expiresIn: '2d' },
   );
   const refreshToken = jwt.sign(
     payload,
