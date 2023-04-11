@@ -102,6 +102,9 @@ const validatorDeleteCharacter = celebrate({
 });
 
 const validatorUpdateCharacter = celebrate({
+  params: Joi.object({
+    charId: Joi.string().alphanum().length(24).hex(),
+  }),
   body: Joi.object({
     spells: Joi.array().unique().items(Joi.string().alphanum().length(24).hex()).required(),
   }),

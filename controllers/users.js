@@ -1,73 +1,167 @@
 const bcrypt = require('bcryptjs');
+const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const Error401 = require('../errors/error-401');
 const Error404 = require('../errors/error-404');
 const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
-const { ERR_404, ERR_400, ERR_409 } = require('../utils/constants');
+const { generateTokens, saveToken, removeToken, findToken } = require('../service/token');
+const mailService = require('../service/mail');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { ERR_401, ERR_404, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
+const { NODE_ENV, API_URL } = process.env;
 
-module.exports.getUserProfile = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new Error404(ERR_404);
-      }
+module.exports.getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
 
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new Error400(ERR_400));
-      }
-
-      return next(err);
-    });
+    if (!user) {
+      throw new Error404(ERR_404);
+    }
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new Error400(ERR_400));
+    }
+    return next(err);
+  }
 };
 
-module.exports.createUser = (req, res, next) => {
-  const { password } = req.body;
-
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
+module.exports.registration = async (req, res, next) => {
+  try {
+    const { password, email } = req.body;
+    const candidate = await User.findOne({ email });
+    if (candidate) {
+      throw new Error409(ERR_409);
+    }
+    const hash = await bcrypt.hash(password, 10);
+    const activationLink = uuid.v4();
+    const user = await User.create({
       ...req.body,
       password: hash,
-    }))
-    .then((user) => res.send({
-      email: user.email,
-      role: user.role,
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new Error400(ERR_400));
-      }
-
-      if (err.code === 11000) {
-        return next(new Error409(ERR_409));
-      }
-
-      return next(err);
+      activationLink
     });
+
+    const tokens = generateTokens({
+      _id: user._id,
+      role: user.role,
+    });
+    await saveToken(user._id, tokens.refreshToken);
+
+    await mailService.sendActivationMail(email, activationLink);
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: true
+    });
+    res.send({
+      accessToken: tokens.accessToken
+    });
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      return next(new Error400(ERR_400));
+    }
+    return next(err);
+  }
 };
 
-module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUserByCredentials(email, password);
 
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign(
-        {
-          _id: user._id,
-          role: user.role,
-        },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-      );
+    const { _id, role, isActivated } = user;
 
-      res.send({ token });
-    })
-    .catch(next);
+    const tokens = generateTokens({
+      _id,
+      role,
+    });
+    await saveToken(user._id, tokens.refreshToken);
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: true
+    });
+    res.send({
+      email,
+      role,
+      isActivated,
+      accessToken: tokens.accessToken
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.activate = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ activationLink: req.params.link });
+
+    if (!user) {
+      throw new Error400(ERR_400);
+    }
+    user.isActivated = true;
+    await user.save();
+    res.redirect(NODE_ENV === 'production' ? API_URL : DEV_URL);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+    const tokenData = await removeToken(refreshToken);
+    res.clearCookie('refreshToken');
+    res.send(tokenData);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      throw new Error400(ERR_400);
+    }
+
+    const userData = jwt.verify(refreshToken, NODE_ENV === 'production' ? JWT_REFRESH_SECRET : 'dev-secret');
+    const tokenFromDb = findToken(refreshToken);
+
+    if (!userData || !tokenFromDb) {
+      throw new Error401(ERR_401);
+    }
+
+    const user = await User.findById(userData._id);
+    const { _id, role, email, isActivated } = user;
+
+    const tokens = generateTokens({
+      _id,
+      role,
+    });
+    await saveToken(user._id, tokens.refreshToken);
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: true
+    });
+    res.send({
+      email,
+      role,
+      isActivated,
+      accessToken: tokens.accessToken
+    });
+
+  } catch (err) {
+    return next(err);
+  }
 };

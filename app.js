@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
@@ -16,12 +17,13 @@ const Error404 = require('./errors/error-404');
 const { ERR_404 } = require('./utils/constants');
 
 const app = express();
-app.use(express.json());
 
 mongoose.connect(`mongodb://${MONGO_IP}:${MONGO_PORT}/bitchardb`, {
   useNewUrlParser: true,
 });
 
+app.use(express.json());
+app.use(cookieParser());
 app.use(cors);
 app.use(requestLogger);
 app.use(limiter);

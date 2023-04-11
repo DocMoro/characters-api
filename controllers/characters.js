@@ -6,60 +6,84 @@ const Error403 = require('../errors/error-403');
 
 const { ERR_403, ERR_404, ERR_400 } = require('../utils/constants');
 
-module.exports.getUserCharacters = (req, res, next) => {
-  const { _id } = req.user;
+module.exports.getUserCharacters = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
 
-  Character.find({ owner: _id }).select(['-createdAt'])
-    .then((char) => res.send(char))
-    .catch(next);
+    const char = await Character.find({ owner: _id }).select(['_id name']);
+    res.send(char);
+  } catch (err) {
+    return next(err);
+  }
 };
 
-module.exports.createCharacter = (req, res, next) => {
-  const { _id } = req.user;
+module.exports.getCharacter = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const char = await Character.findById(id);
 
-  Character.create({
-    spells: [],
-    owner: _id,
-  }).then((char) => res.send(char))
-    .catch(next);
+    if (!char) {
+      throw new Error404(ERR_404);
+    }
+
+    res.send(char);
+  } catch (err) {
+    return next(err);
+  }
 };
 
-module.exports.deleteCharacter = (req, res, next) => {
-  Character.findById(req.params.charId)
-    .then((char) => {
-      if (!char) {
-        throw new Error404(ERR_404);
-      }
+module.exports.createCharacter = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
 
-      if (char.owner.toString() !== req.user._id) {
-        throw new Error403(ERR_403);
-      }
-
-      return Character.findByIdAndRemove(req.params.charId).select(['-createdAt']);
-    })
-    .then((char) => res.send(char))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new Error400(ERR_400));
-      }
-
-      return next(err);
+    const char = await Character.create({
+      spells: [],
+      owner: _id,
     });
+    res.send(char);
+  } catch (err) {
+    return next(err);
+  }
+
 };
 
-module.exports.updateCharacter = (req, res, next) => {
-  Character.findByIdAndUpdate(req.params.charId, {
-    spells: req.body.spells,
-  }, {
-    new: true,
-    runValidators: true,
-  })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new Error400(ERR_400));
-      }
+module.exports.deleteCharacter = async (req, res, next) => {
+  try {
+    const char = await Character.findById(req.params.charId);
 
-      return next(err);
+    if (!char) {
+      throw new Error404(ERR_404);
+    }
+
+    if (char.owner.toString() !== req.user._id) {
+      throw new Error403(ERR_403);
+    }
+
+    const charData = await Character.findByIdAndRemove(req.params.charId).select(['-createdAt']);
+    res.send(charData);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return next(new Error400(ERR_400));
+    }
+
+    return next(err);
+  }
+};
+
+module.exports.updateCharacter = async (req, res, next) => {
+  try {
+    const newChar = await Character.findByIdAndUpdate(req.params.charId, {
+      spells: req.body.spells,
+    }, {
+      new: true,
+      runValidators: true,
     });
+    res.send(newChar);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      return next(new Error400(ERR_400));
+    }
+
+    return next(err);
+  }
 };
