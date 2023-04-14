@@ -95,6 +95,12 @@ const validatorUpdateSpell = celebrate({
   }),
 });
 
+const validatorCreateCharacter = celebrate({
+  body: Joi.object({
+    name: Joi.string().required(),
+  })
+})
+
 const validatorDeleteCharacter = celebrate({
   params: Joi.object({
     charId: Joi.string().alphanum().length(24).hex(),
@@ -116,6 +122,7 @@ module.exports = {
   validatorCreateSpell,
   validatorDeleteSpell,
   validatorUpdateSpell,
+  validatorCreateCharacter,
   validatorDeleteCharacter,
   validatorUpdateCharacter,
 };

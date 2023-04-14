@@ -37,6 +37,7 @@ module.exports.createCharacter = async (req, res, next) => {
     const { _id } = req.user;
 
     const char = await Character.create({
+      name: req.body.name,
       spells: [],
       owner: _id,
     });

@@ -83,4 +83,8 @@ const spellSchema = new mongoose.Schema({
   versionKey: false,
 });
 
-module.exports = mongoose.model('spell', spellSchema);
+const Spell = mongoose.model('spell', spellSchema);
+module.exports = {
+  Spell,
+  spellSchema
+}

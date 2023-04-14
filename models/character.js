@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
+const { spellSchema } = require('./spell');
 
 const characterSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  spells: [{
-    type: mongoose.ObjectId,
-  }],
+  spells: [spellSchema],
   owner: {
     type: mongoose.ObjectId,
     required: true,

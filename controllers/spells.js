@@ -1,4 +1,4 @@
-const Spell = require('../models/spell');
+const { Spell } = require('../models/spell');
 
 const Error404 = require('../errors/error-404');
 const Error400 = require('../errors/error-400');
