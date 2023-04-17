@@ -12,7 +12,6 @@ router.get('/refresh', refresh);
 
 router.use(auth);
 
-router.use('/users', require('./users'));
 router.use('/characters', require('./characters'));
 router.use('/spells', require('./spells'));
 

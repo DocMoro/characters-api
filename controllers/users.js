@@ -5,31 +5,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const Error401 = require('../errors/error-401');
-const Error404 = require('../errors/error-404');
 const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
 const { generateTokens, saveToken, removeToken, findToken } = require('../service/token');
 const mailService = require('../service/mail');
 
-const { ERR_401, ERR_404, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
+const { ERR_401, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
 const { NODE_ENV, API_URL } = process.env;
-
-module.exports.getUserProfile = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user._id);
-
-    if (!user) {
-      throw new Error404(ERR_404);
-    }
-    res.send(user);
-  } catch (err) {
-    if (err.name === 'CastError') {
-      return next(new Error400(ERR_400));
-    }
-    return next(err);
-  }
-};
 
 module.exports.registration = async (req, res, next) => {
   try {
@@ -60,6 +43,9 @@ module.exports.registration = async (req, res, next) => {
       sameSite: true
     });
     res.send({
+      email,
+      role,
+      isActivated,
       accessToken: tokens.accessToken
     });
   } catch (err) {
