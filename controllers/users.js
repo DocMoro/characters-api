@@ -39,8 +39,7 @@ module.exports.registration = async (req, res, next) => {
 
     res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: true
+      httpOnly: true
     });
     res.send({
       email,
@@ -71,8 +70,7 @@ module.exports.login = async (req, res, next) => {
 
     res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: true
+      httpOnly: true
     });
     res.send({
       email,
@@ -137,8 +135,7 @@ module.exports.refresh = async (req, res, next) => {
 
     res.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: true
+      httpOnly: true
     });
     res.send({
       email,
