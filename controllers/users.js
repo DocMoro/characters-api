@@ -12,7 +12,7 @@ const { generateTokens, saveToken, removeToken, findToken } = require('../servic
 const mailService = require('../service/mail');
 
 const { ERR_401, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
-const { NODE_ENV, API_URL } = process.env;
+const { NODE_ENV, FRONT_URL } = process.env;
 
 module.exports.registration = async (req, res, next) => {
   try {
@@ -92,7 +92,7 @@ module.exports.activate = async (req, res, next) => {
     }
     user.isActivated = true;
     await user.save();
-    res.redirect(NODE_ENV === 'production' ? API_URL : DEV_URL);
+    res.redirect(NODE_ENV === 'production' ? FRONT_URL : DEV_URL);
   } catch (err) {
     return next(err);
   }
