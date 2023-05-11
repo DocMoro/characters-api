@@ -29,15 +29,15 @@ app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
-app.get('/api/crash-test', () => {
+app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.use('/api', require('./routes/index'));
+app.use('/', require('./routes/index'));
 
-app.use('/api', (req, res, next) => {
+app.use('/', (req, res, next) => {
   next(new Error404(ERR_404));
 });
 
