@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
@@ -25,10 +24,7 @@ mongoose.connect(`mongodb://${MONGO_IP}:${MONGO_PORT}/bitchardb`, {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  credentials: true,
-  origin: 'http://localhost:3000'
-}));
+app.use(cors);
 app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
