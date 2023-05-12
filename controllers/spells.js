@@ -28,7 +28,6 @@ module.exports.createSpell = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       return next(new Error400(ERR_400));
     }
-
     return next(err);
   }
 };
@@ -51,7 +50,6 @@ module.exports.deleteSpell = async (req, res, next) => {
     if (err.name === 'CastError') {
       return next(new Error400(ERR_400));
     }
-
     return next(err);
   }
 };
@@ -72,7 +70,6 @@ module.exports.updateSpell = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       return next(new Error400(ERR_400));
     }
-
     return next(err);
   }
 };

@@ -3,7 +3,7 @@ const { FRONT_URL } = process.env;
 const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 const allowedCors = [
   FRONT_URL,
-  'localhost:3000'
+  'localhost:3000',
 ];
 
 module.exports = (req, res, next) => {

@@ -86,5 +86,5 @@ const spellSchema = new mongoose.Schema({
 const Spell = mongoose.model('spell', spellSchema);
 module.exports = {
   Spell,
-  spellSchema
-}
+  spellSchema,
+};

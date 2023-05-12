@@ -45,7 +45,6 @@ module.exports.createCharacter = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-
 };
 
 module.exports.deleteCharacter = async (req, res, next) => {
@@ -66,7 +65,6 @@ module.exports.deleteCharacter = async (req, res, next) => {
     if (err.name === 'CastError') {
       return next(new Error400(ERR_400));
     }
-
     return next(err);
   }
 };
@@ -84,7 +82,6 @@ module.exports.updateCharacter = async (req, res, next) => {
     if (err.name === 'ValidationError') {
       return next(new Error400(ERR_400));
     }
-
     return next(err);
   }
 };

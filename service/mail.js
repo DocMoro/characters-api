@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 const { NODE_ENV, API_URL } = process.env;
 const { DEV_URL } = require('../utils/constants');
 
-class mailService {
+class MailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: 'smtp.mail.ru',
@@ -11,13 +11,13 @@ class mailService {
       secure: true,
       auth: {
         user: 'prcharapi@mail.ru',
-        pass: 'ddac62tCxT3uxvq4CR9d'
-      }
-    })
+        pass: 'ddac62tCxT3uxvq4CR9d',
+      },
+    });
   }
 
   async sendActivationMail(to, link) {
-    link = `${NODE_ENV === 'production' ? API_URL : DEV_URL}activate/${link}`
+    const url = `${NODE_ENV === 'production' ? API_URL : DEV_URL}activate/${link}`;
 
     await this.transporter.sendMail({
       from: 'prcharapi@mail.ru',
@@ -27,10 +27,10 @@ class mailService {
       html:
           `<div>
             <h1>Для активации перейдите по ссылке</h1>
-            <a href="${link}">${link}</a>
-          </div>`
-    })
+            <a href="${url}">${url}</a>
+          </div>`,
+    });
   }
 }
 
-module.exports = new mailService();
+module.exports = new MailService();

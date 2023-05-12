@@ -44,7 +44,7 @@ const validatorSignin = celebrate({
 
 const validatorSignup = celebrate({
   body: Joi.object({
-    email: Joi.string().required().email(),
+    email: Joi.string().email().required(),
     password: Joi.string().required(),
     role: Joi.string().valid('Admin', 'User'),
   }),
@@ -100,8 +100,8 @@ const validatorUpdateSpell = celebrate({
 const validatorCreateCharacter = celebrate({
   body: Joi.object({
     name: Joi.string().required(),
-  })
-})
+  }),
+});
 
 const validatorDeleteCharacter = celebrate({
   params: Joi.object({

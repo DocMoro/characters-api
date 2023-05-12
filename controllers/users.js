@@ -8,11 +8,22 @@ const Error401 = require('../errors/error-401');
 const Error400 = require('../errors/error-400');
 const Error409 = require('../errors/error-409');
 
-const { generateTokens, saveToken, removeToken, findToken } = require('../service/token');
+const {
+  generateTokens,
+  saveToken,
+  removeToken,
+  findToken,
+} = require('../service/token');
 const mailService = require('../service/mail');
 
-const { ERR_401, ERR_400, ERR_409, DEV_URL } = require('../utils/constants');
-const { NODE_ENV, FRONT_URL } = process.env;
+const {
+  ERR_401,
+  ERR_400,
+  ERR_409,
+  DEV_URL,
+} = require('../utils/constants');
+
+const { NODE_ENV, FRONT_URL, JWT_REFRESH_SECRET } = process.env;
 
 module.exports.registration = async (req, res, next) => {
   try {
@@ -26,26 +37,29 @@ module.exports.registration = async (req, res, next) => {
     const user = await User.create({
       ...req.body,
       password: hash,
-      activationLink
+      activationLink,
     });
+    const { _id, role, isActivated } = user;
 
     const tokens = generateTokens({
-      _id: user._id,
-      role: user.role,
+      _id,
+      role,
     });
-    await saveToken(user._id, tokens.refreshToken);
+    const { accessToken, refreshToken } = tokens;
+
+    await saveToken(_id, refreshToken);
 
     await mailService.sendActivationMail(email, activationLink);
 
-    res.cookie('refreshToken', tokens.refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true
+      httpOnly: true,
     });
     res.send({
       email,
       role,
       isActivated,
-      accessToken: tokens.accessToken
+      accessToken,
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -59,24 +73,25 @@ module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
-
     const { _id, role, isActivated } = user;
 
     const tokens = generateTokens({
       _id,
       role,
     });
-    await saveToken(user._id, tokens.refreshToken);
+    const { accessToken, refreshToken } = tokens;
 
-    res.cookie('refreshToken', tokens.refreshToken, {
+    await saveToken(_id, refreshToken);
+
+    res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true
+      httpOnly: true,
     });
     res.send({
       email,
       role,
       isActivated,
-      accessToken: tokens.accessToken
+      accessToken,
     });
   } catch (err) {
     return next(err);
@@ -125,25 +140,34 @@ module.exports.refresh = async (req, res, next) => {
     }
 
     const user = await User.findById(userData._id);
-    const { _id, role, email, isActivated } = user;
+    const {
+      _id,
+      role,
+      email,
+      isActivated,
+    } = user;
 
     const tokens = generateTokens({
       _id,
       role,
     });
-    await saveToken(user._id, tokens.refreshToken);
+    const {
+      accessToken: newAccess,
+      refreshToken: newRefresh,
+    } = tokens;
 
-    res.cookie('refreshToken', tokens.refreshToken, {
+    await saveToken(user._id, newRefresh);
+
+    res.cookie('refreshToken', newRefresh, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true
+      httpOnly: true,
     });
     res.send({
       email,
       role,
       isActivated,
-      accessToken: tokens.accessToken
+      accessToken: newAccess,
     });
-
   } catch (err) {
     return next(err);
   }
