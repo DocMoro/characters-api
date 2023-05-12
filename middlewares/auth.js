@@ -7,13 +7,13 @@ const { ERR_401 } = require('../utils/constants');
 const { NODE_ENV, JWT_ACCESS_SECRET } = process.env;
 
 module.exports = (req, res, next) => {
-  const { Authorization } = req.headers;
+  const { authorization } = req.headers;
 
-  if (!Authorization || !Authorization.startsWith('Bearer ')) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new Error401(ERR_401));
   }
 
-  const token = Authorization.replace('Bearer ', '');
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
