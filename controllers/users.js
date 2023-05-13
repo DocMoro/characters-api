@@ -129,7 +129,7 @@ module.exports.refresh = async (req, res, next) => {
     const { refreshToken } = req.cookies;
 
     if (!refreshToken) {
-      throw new Error400(ERR_400);
+      throw new Error400(JSON.stringify(req.cookies));
     }
 
     const userData = jwt.verify(refreshToken, NODE_ENV === 'production' ? JWT_REFRESH_SECRET : 'dev-secret');
