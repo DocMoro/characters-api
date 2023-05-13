@@ -10,7 +10,7 @@ module.exports.getUserCharacters = async (req, res, next) => {
   try {
     const { _id } = req.user;
 
-    const char = await Character.find({ owner: _id }).select(['_id name']);
+    const char = await Character.find({ owner: _id }).select(['_id', 'name']);
     res.send(char);
   } catch (err) {
     return next(err);
