@@ -54,7 +54,7 @@ module.exports.registration = async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSate: 'None',
+      sameSate: true,
       secure: true,
     });
     res.send({
@@ -88,7 +88,7 @@ module.exports.login = async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSate: 'None',
+      sameSate: true,
       secure: true,
     });
     res.send({
@@ -133,7 +133,7 @@ module.exports.refresh = async (req, res, next) => {
     const { refreshToken } = req.cookies;
 
     if (!refreshToken) {
-      throw new Error400(JSON.stringify(req.cookies));
+      throw new Error400(ERR_400);
     }
 
     const userData = jwt.verify(refreshToken, NODE_ENV === 'production' ? JWT_REFRESH_SECRET : 'dev-secret');
@@ -165,7 +165,7 @@ module.exports.refresh = async (req, res, next) => {
     res.cookie('refreshToken', newRefresh, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSate: 'None',
+      sameSate: true,
       secure: true,
     });
     res.send({
