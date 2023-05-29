@@ -114,7 +114,8 @@ const validatorUpdateCharacter = celebrate({
     charId: Joi.string().alphanum().length(24).hex(),
   }),
   body: Joi.object({
-    spells: Joi.array().unique().items(Joi.object(validSpellObj)).required(),
+    name: Joi.string(),
+    spells: Joi.array().unique().items(Joi.object(validSpellObj)),
   }),
 });
 
