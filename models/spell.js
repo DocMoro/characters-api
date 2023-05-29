@@ -24,7 +24,6 @@ const spellSchema = new mongoose.Schema({
   }],
   material: {
     type: String,
-    required: true,
   },
   ritual: {
     type: Boolean,
