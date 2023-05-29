@@ -6,7 +6,7 @@ const validSpellObj = {
   higher_level: Joi.string(),
   range: Joi.number().integer().required(),
   components: Joi.array().unique().items(Joi.string().valid('В', 'С', 'М')).required(),
-  material: Joi.string().required(),
+  material: Joi.string(),
   ritual: Joi.bool().required(),
   duration: Joi.string().required(),
   concentration: Joi.bool().required(),
