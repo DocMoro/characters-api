@@ -26,7 +26,7 @@ module.exports.createSpell = async (req, res, next) => {
     res.send(spell);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      return next(new Error400(ERR_400));
+      return next(new Error400(err));
     }
     return next(err);
   }
