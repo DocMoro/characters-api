@@ -3,10 +3,10 @@ const { celebrate, Joi } = require('celebrate');
 const validSpellObj = {
   name: Joi.string().required(),
   desc: Joi.string().required(),
-  higher_level: Joi.string(),
+  higher_level: Joi.string().allow('').required(),
   range: Joi.number().integer().required(),
   components: Joi.array().unique().items(Joi.string().valid('В', 'С', 'М')).required(),
-  material: Joi.string(),
+  material: Joi.string().allow('').required(),
   ritual: Joi.bool().required(),
   duration: Joi.string().required(),
   concentration: Joi.bool().required(),
@@ -50,50 +50,13 @@ const validatorSignup = celebrate({
   }),
 });
 
-const validatorCreateSpell = celebrate({
+const validatorCreateOrUpdateSpell = celebrate({
   body: Joi.object(validSpellObj),
 });
 
 const validatorDeleteSpell = celebrate({
   params: Joi.object({
     spellId: Joi.string().alphanum().length(24).hex(),
-  }),
-});
-
-const validatorUpdateSpell = celebrate({
-  body: Joi.object({
-    name: Joi.string(),
-    desc: Joi.string(),
-    higher_level: Joi.string(),
-    range: Joi.number().integer(),
-    components: Joi.array().unique().items(Joi.string().valid('В', 'С', 'М')),
-    material: Joi.string(),
-    ritual: Joi.bool(),
-    duration: Joi.string(),
-    concentration: Joi.bool(),
-    casting_time: Joi.string(),
-    level: Joi.number().integer(),
-    school: Joi.string().valid(
-      'Воплощение',
-      'Вызов',
-      'Иллюзия',
-      'Некромантия',
-      'Ограждение',
-      'Очарование',
-      'Преобразование',
-      'Прорицание',
-    ),
-    classes: Joi.array().unique().items(Joi.string().valid(
-      'Бард',
-      'Жрец',
-      'Паладин',
-      'Следопыт',
-      'Чародей',
-      'Колдун',
-      'Волшебник',
-      'Друид',
-      'Изобретатель',
-    )),
   }),
 });
 
@@ -122,9 +85,8 @@ const validatorUpdateCharacter = celebrate({
 module.exports = {
   validatorSignin,
   validatorSignup,
-  validatorCreateSpell,
+  validatorCreateOrUpdateSpell,
   validatorDeleteSpell,
-  validatorUpdateSpell,
   validatorCreateCharacter,
   validatorDeleteCharacter,
   validatorUpdateCharacter,

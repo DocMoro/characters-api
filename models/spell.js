@@ -13,6 +13,7 @@ const spellSchema = new mongoose.Schema({
   },
   higher_level: {
     type: String,
+    required: true,
   },
   range: {
     type: Number,
@@ -24,6 +25,7 @@ const spellSchema = new mongoose.Schema({
   }],
   material: {
     type: String,
+    required: true,
   },
   ritual: {
     type: Boolean,

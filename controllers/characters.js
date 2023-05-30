@@ -71,11 +71,7 @@ module.exports.deleteCharacter = async (req, res, next) => {
 
 module.exports.updateCharacter = async (req, res, next) => {
   try {
-    const { spells, name } = req.body;
-    const newChar = await Character.findByIdAndUpdate(req.params.charId, {
-      name,
-      spells,
-    }, {
+    const newChar = await Character.findByIdAndUpdate(req.params.charId, req.body, {
       new: true,
       runValidators: true,
     });

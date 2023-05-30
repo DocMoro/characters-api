@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { validatorCreateSpell, validatorDeleteSpell, validatorUpdateSpell } = require('../utils/validator');
+const { validatorCreateOrUpdateSpell, validatorDeleteSpell } = require('../utils/validator');
 const {
   getSpells,
   createSpell,
@@ -9,8 +9,8 @@ const {
 } = require('../controllers/spells');
 
 router.get('/', getSpells);
-router.post('/', validatorCreateSpell, createSpell);
+router.post('/', validatorCreateOrUpdateSpell, createSpell);
 router.delete('/:spellId', validatorDeleteSpell, deleteSpell);
-router.patch('/:spellId', validatorUpdateSpell, updateSpell);
+router.patch('/:spellId', validatorCreateOrUpdateSpell, updateSpell);
 
 module.exports = router;
