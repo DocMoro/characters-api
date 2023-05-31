@@ -1,6 +1,42 @@
 const { celebrate, Joi } = require('celebrate');
 
+const validCreateSpellObj = {
+  name: Joi.string().required(),
+  desc: Joi.string().required(),
+  higher_level: Joi.string().allow('').required(),
+  range: Joi.number().integer().required(),
+  components: Joi.array().unique().items(Joi.string().valid('В', 'С', 'М')).required(),
+  material: Joi.string().allow('').required(),
+  ritual: Joi.bool().required(),
+  duration: Joi.string().required(),
+  concentration: Joi.bool().required(),
+  casting_time: Joi.string().required(),
+  level: Joi.number().integer().required(),
+  school: Joi.string().valid(
+    'Воплощение',
+    'Вызов',
+    'Иллюзия',
+    'Некромантия',
+    'Ограждение',
+    'Очарование',
+    'Преобразование',
+    'Прорицание',
+  ).required(),
+  classes: Joi.array().unique().items(Joi.string().valid(
+    'Бард',
+    'Жрец',
+    'Паладин',
+    'Следопыт',
+    'Чародей',
+    'Колдун',
+    'Волшебник',
+    'Друид',
+    'Изобретатель',
+  )).required(),
+};
+
 const validSpellObj = {
+  _id: Joi.string().alphanum().length(24).hex(),
   name: Joi.string().required(),
   desc: Joi.string().required(),
   higher_level: Joi.string().allow('').required(),
@@ -51,7 +87,7 @@ const validatorSignup = celebrate({
 });
 
 const validatorCreateOrUpdateSpell = celebrate({
-  body: Joi.object(validSpellObj),
+  body: Joi.object(validCreateSpellObj),
 });
 
 const validatorDeleteSpell = celebrate({
