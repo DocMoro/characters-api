@@ -1,6 +1,7 @@
 const router = require('express').Router();
 
 const { validatorSignin, validatorSignup } = require('../utils/validator');
+const { getCharacter } = require('../controllers/characters');
 const {
   login,
   registration,
@@ -15,6 +16,7 @@ router.post('/signup', validatorSignup, registration);
 router.get('/activate/:link', activate);
 router.post('/signout', logout);
 router.get('/refresh', refresh);
+router.get('/characters/:id', getCharacter);
 
 router.use(auth);
 
