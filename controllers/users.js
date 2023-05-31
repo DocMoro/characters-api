@@ -58,6 +58,7 @@ module.exports.registration = async (req, res, next) => {
       secure: true,
     });
     res.send({
+      _id,
       email,
       role,
       isActivated,
@@ -92,6 +93,7 @@ module.exports.login = async (req, res, next) => {
       secure: true,
     });
     res.send({
+      _id,
       email,
       role,
       isActivated,
@@ -169,6 +171,7 @@ module.exports.refresh = async (req, res, next) => {
       secure: true,
     });
     res.send({
+      _id,
       email,
       role,
       isActivated,
