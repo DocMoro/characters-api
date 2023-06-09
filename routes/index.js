@@ -9,6 +9,7 @@ const {
   logout,
   refresh,
 } = require('../controllers/users');
+const { refactor } = require('../controllers/spells');
 const auth = require('../middlewares/auth');
 
 router.post('/signin', validatorSignin, login);
@@ -17,6 +18,7 @@ router.get('/activate/:link', activate);
 router.post('/signout', logout);
 router.get('/refresh', refresh);
 router.get('/characters/:id', getCharacter);
+router.get('/spells/refactor', refactor);
 
 router.use(auth);
 
