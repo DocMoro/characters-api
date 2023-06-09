@@ -15,7 +15,7 @@ const spellSchema = new mongoose.Schema({
     type: String,
   },
   range: {
-    type: Number,
+    type: String,
     required: true,
   },
   components: [{
