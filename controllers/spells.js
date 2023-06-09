@@ -76,19 +76,18 @@ module.exports.updateSpell = async (req, res, next) => {
 
 module.exports.refactor = async (req, res, next) => {
   try {
-    let spells = await Spell.find({ 'range': { $type: 16 } });
+    let spells = await Spell.find({});
 
     spells = spells.map(async function (x) {
-      console.log('err')
-      x.range = x.range === 0
+      x.range = x.range === '0 футов'
         ? 'На себя'
-        : x.range === -1
+        : x.range === '-1 футов'
           ? 'Касание'
-          : x.range === -2
+          : x.range === '-2 футов'
             ? 'Особое'
-            : x.range === -3
+            : x.range === '-3 футов'
               ? 'В пределах видимости'
-              : `${x.range} футов`;
+              : x.range;
       await x.save();
       return x;
     });
