@@ -9,6 +9,7 @@ const { ERR_400, ERR_403, ERR_404 } = require('../utils/constants');
 module.exports.getSpells = async (req, res, next) => {
   try {
     const spells = await Spell.find({}).select(['-createdAt']);
+    spells.sort((a, b) => (a.name > b.name ? 1 : -1));
     res.send(spells);
   } catch (err) {
     return next(err);
