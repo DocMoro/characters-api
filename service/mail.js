@@ -11,7 +11,7 @@ class MailService {
       secure: true,
       auth: {
         user: 'prcharapi@mail.ru',
-        pass: 'ddac62tCxT3uxvq4CR9d',
+        pass: '7A7JKX8yU3WMCLYaTshw',
       },
     });
   }
